@@ -1,15 +1,50 @@
-from notion_client import Client
+import requests, json
 
 
 class NotionAPI:
     def __init__(self, integration_token, database_id):
-        self.client = Client(auth=integration_token)
+        self.integration_token = integration_token
         self.database_id = database_id
-
-    def add_game(self, game):
-        new_game = {
-            "Title": {"title": [{"text": {"content": game.name}}]},
-            "Notes": {"rich_text": [{"text": {"content": game.description}}]}
+        self.headers = {
+            "Authorization": "Bearer " + self.integration_token,
+            "Content-Type": "application/json",
+            "Notion-Version": "2022-06-28",
         }
 
-        self.client.pages.create(parent={"database_id": self.database_id}, properties=new_game)
+    def get_pages(self, num_pages=None):
+
+        
+
+        readUrl = f"https://api.notion.com/v1/databases/{self.database_id}/query"
+
+        get_all = num_pages is None
+        page_size = 100 if get_all else num_pages
+        payload = {"page_size": page_size}
+
+        res = requests.request("POST", readUrl, json=payload, headers=self.headers)
+
+        data = res.json()
+
+        print(res.status_code)
+
+        with open('./full-properties.json', 'w', encoding='utf8') as f:
+            json.dump(data, f, ensure_ascii=False)
+
+        results = data["results"]
+        while data["has_more"] and get_all:
+            payload = {"page_size": page_size, "start_cursor": data["next_cursor"]}
+            url = f"https://api.notion.com/v1/databases/{self.database_id}/query"
+            response = requests.post(url, json=payload, headers=self.headers)
+            data = response.json()
+            results.extend(data["results"])
+
+        return results
+    
+    def create_page(self, data: dict):
+        create_url = "https://api.notion.com/v1/pages"
+
+        payload = {"parent": {"database_id": self.database_id}, "properties": data}
+
+        res = requests.post(create_url, headers=self.headers, json=payload)
+        # print(res.status_code)
+        return res

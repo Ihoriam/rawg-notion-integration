@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime, timezone
 
 sys.path.insert(0, 'rawg_integration')
 sys.path.insert(0, 'notion_integration')
@@ -18,14 +19,37 @@ notion_api = NotionAPI(
     database_id=config.get('API_KEYS', 'notion_database_id')
 )
 
-game_title = "Dark Souls"
-game = rawg_api.search_game(game_title)
-print(game)
+pages = notion_api.get_pages()
 
-game_details = rawg_api.get_game_details_by_id(game.id)
-print(game_details)
+for page in pages:
+    page_id = page["id"]
+    props = page["properties"]
+    
+    name = props["Title"]["title"][0]["text"]["content"]
+    print(name)
+    # description = props["Description"]["rich_text"][0]["text"]["content"]
+    # print(description)
+    # genre = props["Ganre"]["rich_text"][0]["text"]["content"]
+    # print(genre)
 
-if game:
-    notion_api.add_game(game_details)
-else:
-    print("No results found for that game title.")
+title = "Elder ring"
+release_date = datetime.strptime('09-19-2020', '%m-%d-%Y').astimezone(timezone.utc).isoformat()
+description = "Test Description"
+
+data = {
+    "Title": {"title": [{"text": {"content": title}}]},
+}
+
+notion_api.create_page(data)
+
+# game_title = "Dark Souls"
+# game = rawg_api.search_game(game_title)
+# print(game)
+
+# game_details = rawg_api.get_game_details_by_id(game.id)
+# print(game_details)
+
+# if game:
+#     notion_api.add_game(game_details)
+# else:
+#     print("No results found for that game title.")
