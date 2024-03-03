@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 from game_dto import GameDto
@@ -35,6 +37,10 @@ class RawgAPI:
         }
         response = requests.get(details_url, params=params)
         response_json = response.json()
+
+        with open('.temp/game-details.json', 'w', encoding='utf8') as f:
+            json.dump(response_json, f, ensure_ascii=False)
+
 
         return GameDto(
             id=response_json["id"],

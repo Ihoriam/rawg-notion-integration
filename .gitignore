@@ -2,4 +2,6 @@
 .idea
 .fleet
 *.pyc
+
+.temp
 config.ini

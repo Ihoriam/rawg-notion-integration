@@ -1,4 +1,5 @@
-import requests, json
+import json
+import requests
 
 
 class NotionAPI:
@@ -12,9 +13,6 @@ class NotionAPI:
         }
 
     def get_pages(self, num_pages=None):
-
-        
-
         readUrl = f"https://api.notion.com/v1/databases/{self.database_id}/query"
 
         get_all = num_pages is None
@@ -27,7 +25,7 @@ class NotionAPI:
 
         print(res.status_code)
 
-        with open('./full-properties.json', 'w', encoding='utf8') as f:
+        with open('.temp/full-properties.json', 'w', encoding='utf8') as f:
             json.dump(data, f, ensure_ascii=False)
 
         results = data["results"]
@@ -39,11 +37,19 @@ class NotionAPI:
             results.extend(data["results"])
 
         return results
-    
+
     def create_page(self, data: dict):
         create_url = "https://api.notion.com/v1/pages"
 
-        payload = {"parent": {"database_id": self.database_id}, "properties": data}
+        payload = {
+            "parent": {"database_id": self.database_id},
+            "cover": {
+                "external": {
+                    "url": "https://upload.wikimedia.org/wikipedia/commons/6/62/Tuscankale.jpg"
+                }
+            },
+            "properties": data
+        }
 
         res = requests.post(create_url, headers=self.headers, json=payload)
         # print(res.status_code)
