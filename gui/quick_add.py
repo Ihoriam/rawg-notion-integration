@@ -28,19 +28,21 @@ def add_game_to_notion():
         messagebox.showerror("Not Found", f"Game '{game_title}' not found on RAWG.")
         return
     details = rawg_api.get_game_details_by_id(game.id)
-    # Prepare data for Notion using all GameDto fields
     res = notion_api.add_game(
         title=details.name,
         status=details.status,
         rating=details.rating,
         release_date=details.release_date,
         genre=details.genre,
-        platform=details.platform
+        platform=details.platform,
+        cover_url=details.background_image
     )
     if res.status_code == 200 or res.status_code == 201:
         messagebox.showinfo("Success", f"Game '{details.name}' added to Notion!")
     else:
         messagebox.showerror("Notion Error", f"Failed to add game. Status: {res.status_code}")
+        print(res.reason)
+        print(res.text)
 
 
 root = tk.Tk()

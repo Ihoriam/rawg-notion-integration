@@ -56,13 +56,23 @@ class NotionAPI:
         # print(res.status_code)
         return res
 
-    def add_game(self, title, status, rating, release_date, genre, platform):
+    def add_game(self, title, status, rating, release_date, genre, platform, cover_url=None):
         data = {
             "Title": {"title": [{"text": {"content": title}}]},
-            "Status": {"select": {"name": status}},
-            "Rating": {"number": rating},
+            # Add other properties as needed, but Status/Rating omitted for manual selection
             "Release Date": {"date": {"start": release_date}},
-            "Genre": {"multi_select": [{"name": genre}] if genre else []},
-            "Platform": {"multi_select": [{"name": platform}] if platform else []},
+            "Genre": {"multi_select": [{"name": g} for g in genre] if genre else []},
+            "Platform": {"multi_select": [{"name": p} for p in platform] if platform else []},
         }
-        return self.create_page(data)
+        payload = {
+            "parent": {"database_id": self.database_id},
+            "properties": data,
+        }
+        if cover_url:
+            payload["cover"] = {
+                "external": {
+                    "url": cover_url
+                }
+            }
+        res = requests.post("https://api.notion.com/v1/pages", headers=self.headers, json=payload)
+        return res
