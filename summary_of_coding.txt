@@ -1,0 +1,3 @@
+- Python imports can be tricky in multi-folder projects. Scripts may fail to find modules unless run from the project root or sys.path is manually set. The professional solution is to add a pyproject.toml and run 'pip install -e .', then use absolute imports everywhere.
+
+-

@@ -1,4 +1,5 @@
 import json
+
 import requests
 
 
@@ -54,3 +55,14 @@ class NotionAPI:
         res = requests.post(create_url, headers=self.headers, json=payload)
         # print(res.status_code)
         return res
+
+    def add_game(self, title, status, rating, release_date, genre, platform):
+        data = {
+            "Title": {"title": [{"text": {"content": title}}]},
+            "Status": {"select": {"name": status}},
+            "Rating": {"number": rating},
+            "Release Date": {"date": {"start": release_date}},
+            "Genre": {"multi_select": [{"name": genre}] if genre else []},
+            "Platform": {"multi_select": [{"name": platform}] if platform else []},
+        }
+        return self.create_page(data)

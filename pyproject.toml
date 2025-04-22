@@ -1,0 +1,12 @@
+[project]
+name = "game-info-for-notion"
+version = "0.1.0"
+description = "A plugin-based system to sync game/movie/book info from APIs to Notion"
+authors = [{ name = "Your Name", email = "your@email.com" }]
+dependencies = [
+    "requests"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

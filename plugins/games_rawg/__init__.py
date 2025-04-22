@@ -1,0 +1,1 @@
+# RAWG games plugin
